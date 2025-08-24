@@ -235,29 +235,6 @@ const Login: React.FC = () => {
                   <span className="btn-icon">👑</span>
                   <span>Login as Admin</span>
                 </motion.button>
-
-                <motion.button
-                  type="button"
-                  className="btn btn-ghost dev-user-btn"
-                  onClick={() => {
-                    dispatch(
-                      setCredentials({
-                        token: "dev-user-token",
-                        user: {
-                          id: "dev-user",
-                          email: "user@example.com",
-                          role: "USER",
-                        },
-                      })
-                    );
-                    navigate("/");
-                  }}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  <span className="btn-icon">👤</span>
-                  <span>Login as User</span>
-                </motion.button>
               </motion.div>
             )}
 
