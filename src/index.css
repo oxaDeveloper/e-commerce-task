@@ -227,6 +227,12 @@ body {
   color: var(--text-primary);
 }
 
+.btn-sm {
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  border-radius: var(--radius-sm);
+}
+
 /* Card Styles */
 .card {
   background: var(--bg-card);
@@ -3092,6 +3098,124 @@ p {
   padding: 1.5rem;
   margin: 2rem 0;
   backdrop-filter: blur(20px);
+}
+
+/* Developer Mode Styles */
+.developer-mode-section {
+  background: rgba(79, 172, 254, 0.1);
+  border: 1px solid rgba(79, 172, 254, 0.3);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  margin: 1.5rem 0;
+  backdrop-filter: blur(20px);
+  position: relative;
+}
+
+.developer-mode-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(79, 172, 254, 0.2);
+}
+
+.developer-mode-icon {
+  font-size: 1.2rem;
+  margin-right: 0.5rem;
+}
+
+.developer-mode-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--accent-color);
+  flex: 1;
+}
+
+.disable-dev-btn {
+  background: rgba(255, 107, 107, 0.1) !important;
+  border: 1px solid rgba(255, 107, 107, 0.3) !important;
+  color: var(--error-color) !important;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  transition: all var(--transition-normal);
+}
+
+.disable-dev-btn:hover {
+  background: rgba(255, 107, 107, 0.2) !important;
+  transform: scale(1.1);
+}
+
+.dev-admin-btn {
+  background: var(--warning-gradient) !important;
+  color: var(--bg-primary) !important;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  width: 100%;
+}
+
+.dev-user-btn {
+  background: rgba(67, 97, 238, 0.1) !important;
+  border: 1px solid rgba(67, 97, 238, 0.3) !important;
+  color: var(--primary-color) !important;
+  width: 100%;
+}
+
+.dev-admin-btn:hover,
+.dev-user-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+/* Developer Mode Responsive */
+@media (max-width: 480px) {
+  .developer-mode-section {
+    padding: 1rem;
+    margin: 1rem 0;
+  }
+
+  .developer-mode-header {
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: flex-start;
+  }
+
+  .disable-dev-btn {
+    align-self: flex-end;
+  }
+}
+
+/* Developer Mode Toast */
+.dev-mode-toast {
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  background: var(--accent-gradient);
+  color: var(--bg-primary);
+  padding: 1rem 1.5rem;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-weight: 600;
+  z-index: 1000;
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(79, 172, 254, 0.3);
+}
+
+.toast-icon {
+  font-size: 1.2rem;
+}
+
+.toast-text {
+  font-size: 0.9rem;
 }
 
 .warning-content {

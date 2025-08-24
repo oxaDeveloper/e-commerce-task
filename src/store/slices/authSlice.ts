@@ -12,6 +12,7 @@ import {
   clearLastKnownRole,
 } from "../../utils/storage";
 import { getEmailFromJwt, parseJwt } from "../../utils/jwt";
+import { DEVELOPER_MODE_STORAGE_KEY } from "../../utils/constants";
 
 export type UserRole = "ADMIN" | "USER";
 
@@ -26,6 +27,7 @@ interface AuthState {
   token: string | null;
   status: "idle" | "loading" | "failed";
   error: string | null;
+  developerMode: boolean;
 }
 
 const initialState: AuthState = {
@@ -33,6 +35,7 @@ const initialState: AuthState = {
   token: getToken(),
   status: "idle",
   error: null,
+  developerMode: localStorage.getItem(DEVELOPER_MODE_STORAGE_KEY) === "true",
 };
 
 function deriveRoleFromClaims(claims: any): UserRole {
@@ -209,6 +212,21 @@ const authSlice = createSlice({
         setLastKnownEmail(action.payload.user.email);
       setLastKnownRole(action.payload.user.role);
     },
+    setDeveloperMode(state, action: PayloadAction<boolean>) {
+      state.developerMode = action.payload;
+      localStorage.setItem(
+        DEVELOPER_MODE_STORAGE_KEY,
+        action.payload.toString()
+      );
+    },
+    enableDeveloperMode(state) {
+      state.developerMode = true;
+      localStorage.setItem(DEVELOPER_MODE_STORAGE_KEY, "true");
+    },
+    disableDeveloperMode(state) {
+      state.developerMode = false;
+      localStorage.setItem(DEVELOPER_MODE_STORAGE_KEY, "false");
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -249,5 +267,11 @@ const authSlice = createSlice({
   },
 });
 
-export const { logout, setCredentials } = authSlice.actions;
+export const {
+  logout,
+  setCredentials,
+  setDeveloperMode,
+  enableDeveloperMode,
+  disableDeveloperMode,
+} = authSlice.actions;
 export default authSlice.reducer;

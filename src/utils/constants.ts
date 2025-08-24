@@ -6,3 +6,8 @@ export const JWT_STORAGE_KEY: string =
 
 export const DEFAULT_LANGUAGE: string =
   process.env.REACT_APP_DEFAULT_LANGUAGE || "uz";
+
+// Developer mode constants
+export const DEVELOPER_MODE_CLICK_COUNT = 3;
+export const DEVELOPER_MODE_CLICK_TIMEOUT = 3000; // 3 seconds
+export const DEVELOPER_MODE_STORAGE_KEY = "developerMode";

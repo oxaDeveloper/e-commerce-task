@@ -3,7 +3,11 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
-import { login, setCredentials } from "../store/slices/authSlice";
+import {
+  login,
+  setCredentials,
+  disableDeveloperMode,
+} from "../store/slices/authSlice";
 import { Navigate, useNavigate, Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslation } from "react-i18next";
@@ -186,6 +190,75 @@ const Login: React.FC = () => {
                 <span className="btn-icon">🧪</span>
                 <span>{t("devLoginAsAdmin")}</span>
               </motion.button>
+            )}
+
+            {/* Developer Mode Options */}
+            {auth.developerMode && (
+              <motion.div
+                className="developer-mode-section"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+              >
+                <div className="developer-mode-header">
+                  <span className="developer-mode-icon">🧪</span>
+                  <span className="developer-mode-title">Developer Mode</span>
+                  <button
+                    type="button"
+                    className="btn btn-ghost btn-sm disable-dev-btn"
+                    onClick={() => dispatch(disableDeveloperMode())}
+                    title="Disable Developer Mode"
+                  >
+                    ✕
+                  </button>
+                </div>
+
+                <motion.button
+                  type="button"
+                  className="btn btn-secondary dev-admin-btn"
+                  onClick={() => {
+                    dispatch(
+                      setCredentials({
+                        token: "dev-admin-token",
+                        user: {
+                          id: "dev-admin",
+                          email: "admin@example.com",
+                          role: "ADMIN",
+                        },
+                      })
+                    );
+                    navigate("/");
+                  }}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  <span className="btn-icon">👑</span>
+                  <span>Login as Admin</span>
+                </motion.button>
+
+                <motion.button
+                  type="button"
+                  className="btn btn-ghost dev-user-btn"
+                  onClick={() => {
+                    dispatch(
+                      setCredentials({
+                        token: "dev-user-token",
+                        user: {
+                          id: "dev-user",
+                          email: "user@example.com",
+                          role: "USER",
+                        },
+                      })
+                    );
+                    navigate("/");
+                  }}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  <span className="btn-icon">👤</span>
+                  <span>Login as User</span>
+                </motion.button>
+              </motion.div>
             )}
 
             {/* Error Display */}

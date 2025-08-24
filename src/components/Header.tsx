@@ -1,13 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
-import { logout } from "../store/slices/authSlice";
+import { logout, enableDeveloperMode } from "../store/slices/authSlice";
 import { motion, AnimatePresence } from "framer-motion";
 import LanguageSwitcher from "./LanguageSwitcher";
 import { useTranslation } from "react-i18next";
+import {
+  DEVELOPER_MODE_CLICK_COUNT,
+  DEVELOPER_MODE_CLICK_TIMEOUT,
+} from "../utils/constants";
 
 const Header: React.FC = () => {
-  const { token, user } = useAppSelector((s) => s.auth);
+  const { token, user, developerMode } = useAppSelector((s) => s.auth);
   const cartCount = useAppSelector((s) =>
     s.cart.items.reduce(
       (sum: number, i: { quantity: number }) => sum + i.quantity,
@@ -19,6 +23,9 @@ const Header: React.FC = () => {
   const location = useLocation();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [loginClickCount, setLoginClickCount] = useState(0);
+  const [lastClickTime, setLastClickTime] = useState(0);
+  const [showDevModeToast, setShowDevModeToast] = useState(false);
   const { t } = useTranslation();
 
   useEffect(() => {
@@ -32,6 +39,29 @@ const Header: React.FC = () => {
   const handleLogout = () => {
     dispatch(logout());
     navigate("/login");
+  };
+
+  const handleLoginClick = () => {
+    const currentTime = Date.now();
+
+    // Reset counter if too much time has passed
+    if (currentTime - lastClickTime > DEVELOPER_MODE_CLICK_TIMEOUT) {
+      setLoginClickCount(1);
+    } else {
+      setLoginClickCount((prev) => prev + 1);
+    }
+
+    setLastClickTime(currentTime);
+
+    // Check if we've reached the required click count
+    if (loginClickCount + 1 >= DEVELOPER_MODE_CLICK_COUNT) {
+      dispatch(enableDeveloperMode());
+      setLoginClickCount(0);
+      setShowDevModeToast(true);
+
+      // Hide toast after 3 seconds
+      setTimeout(() => setShowDevModeToast(false), 3000);
+    }
   };
 
   const isAdmin = token && user?.role === "ADMIN";
@@ -115,25 +145,62 @@ const Header: React.FC = () => {
               whileHover="hover"
               className="nav-item-wrapper"
             >
-              <Link
-                to={item.path}
-                className={`nav-item ${
-                  location.pathname === item.path ? "active" : ""
-                }`}
-              >
-                <span className="nav-icon">{item.icon}</span>
-                <span className="nav-label">{item.label}</span>
-                {item.badge && (
-                  <motion.span
-                    className="nav-badge"
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                  >
-                    {item.badge}
-                  </motion.span>
-                )}
-              </Link>
+              {item.path === "/login" ? (
+                <button
+                  onClick={handleLoginClick}
+                  className={`nav-item ${
+                    location.pathname === item.path ? "active" : ""
+                  }`}
+                  style={{
+                    background: "none",
+                    border: "none",
+                    cursor: "pointer",
+                    width: "100%",
+                    textAlign: "left",
+                  }}
+                >
+                  <span className="nav-icon">{item.icon}</span>
+                  <span className="nav-label">{item.label}</span>
+                  {item.badge && (
+                    <motion.span
+                      className="nav-badge"
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{
+                        type: "spring",
+                        stiffness: 500,
+                        damping: 30,
+                      }}
+                    >
+                      {item.badge}
+                    </motion.span>
+                  )}
+                </button>
+              ) : (
+                <Link
+                  to={item.path}
+                  className={`nav-item ${
+                    location.pathname === item.path ? "active" : ""
+                  }`}
+                >
+                  <span className="nav-icon">{item.icon}</span>
+                  <span className="nav-label">{item.label}</span>
+                  {item.badge && (
+                    <motion.span
+                      className="nav-badge"
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{
+                        type: "spring",
+                        stiffness: 500,
+                        damping: 30,
+                      }}
+                    >
+                      {item.badge}
+                    </motion.span>
+                  )}
+                </Link>
+              )}
             </motion.div>
           ))}
 
@@ -193,19 +260,44 @@ const Header: React.FC = () => {
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.3, delay: index * 0.1 }}
                 >
-                  <Link
-                    to={item.path}
-                    className={`nav-item-mobile ${
-                      location.pathname === item.path ? "active" : ""
-                    }`}
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    <span className="nav-icon">{item.icon}</span>
-                    <span className="nav-label">{item.label}</span>
-                    {item.badge && (
-                      <span className="nav-badge">{item.badge}</span>
-                    )}
-                  </Link>
+                  {item.path === "/login" ? (
+                    <button
+                      onClick={() => {
+                        handleLoginClick();
+                        setIsMobileMenuOpen(false);
+                      }}
+                      className={`nav-item-mobile ${
+                        location.pathname === item.path ? "active" : ""
+                      }`}
+                      style={{
+                        background: "none",
+                        border: "none",
+                        cursor: "pointer",
+                        width: "100%",
+                        textAlign: "left",
+                      }}
+                    >
+                      <span className="nav-icon">{item.icon}</span>
+                      <span className="nav-label">{item.label}</span>
+                      {item.badge && (
+                        <span className="nav-badge">{item.badge}</span>
+                      )}
+                    </button>
+                  ) : (
+                    <Link
+                      to={item.path}
+                      className={`nav-item-mobile ${
+                        location.pathname === item.path ? "active" : ""
+                      }`}
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      <span className="nav-icon">{item.icon}</span>
+                      <span className="nav-label">{item.label}</span>
+                      {item.badge && (
+                        <span className="nav-badge">{item.badge}</span>
+                      )}
+                    </Link>
+                  )}
                 </motion.div>
               ))}
 
@@ -232,6 +324,22 @@ const Header: React.FC = () => {
           )}
         </AnimatePresence>
       </div>
+
+      {/* Developer Mode Toast Notification */}
+      <AnimatePresence>
+        {showDevModeToast && (
+          <motion.div
+            className="dev-mode-toast"
+            initial={{ opacity: 0, y: 50, x: "-50%" }}
+            animate={{ opacity: 1, y: 0, x: "-50%" }}
+            exit={{ opacity: 0, y: -50, x: "-50%" }}
+            transition={{ duration: 0.3 }}
+          >
+            <span className="toast-icon">🧪</span>
+            <span className="toast-text">Developer Mode Activated!</span>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.header>
   );
 };
